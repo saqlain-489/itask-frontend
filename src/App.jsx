@@ -7,15 +7,15 @@ import Editpage from "./Todo/edittodo.jsx";
 // import Authpage from "./Todo/authpage.jsx";
 import { Toaster } from "react-hot-toast";
 import Landing from "./Todo/landing Page/landing.jsx";
-import SignIn from "./Todo/SignIn.jsx";
-import SignUp from "./Todo/SignUp.jsx";
+import SignIn from "./Todo/Auth/SignIn.jsx";
+import SignUp from "./Todo/Auth/SignUp.jsx";
 import Notfound from "./Todo/error404.jsx";
 import Profile from "./Todo/profile.jsx";
 import AdminDashboard from "./Todo/admin/admin-dashboard.jsx";
 import AdminUsers from "./Todo/admin/AdminUsers.jsx";
 import AdminTodos from "./Todo/admin/AdminTodos.jsx";
-import ResetPassword from "./Todo/reset_password.jsx"
-import ForgotPassword from "./froget_password.jsx";
+import ResetPassword from "./Todo/Auth/reset_password.jsx"
+import ForgotPassword from "./Todo/Auth/froget_password.jsx";
 // import ResetPassword from './components/ResetPassword';
 
 

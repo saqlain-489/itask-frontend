@@ -2,12 +2,12 @@ import { useState } from "react";
 // import { login } from "./authService";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { auth } from "./firebaseConfig";
+import { auth } from "../firebaseConfig";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { doc, getDoc } from "firebase/firestore";
-import { db } from "./firebaseConfig";
+import { db } from "../firebaseConfig";
 
 
 const eyeclosed = 'bi bi-eye-slash'
