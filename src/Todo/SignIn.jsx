@@ -137,8 +137,8 @@ export default function SignIn() {
     }
   }
   return (
-    <div className="signin-container">
-      <form onSubmit={formik.handleSubmit} className="signin">
+    <div className="signin-container ">
+      <form onSubmit={formik.handleSubmit} className="signin py-4">
         <h2>Sign In</h2>
         <p>Enter your credentials to continue...</p>
         <input
@@ -183,6 +183,9 @@ export default function SignIn() {
             Sign up?{' '}
           </Link>
           if you don't have an account
+        </div>
+        <div>
+          <Link to='/forget-password'>forget password</Link>
         </div>
       </form>
     </div>

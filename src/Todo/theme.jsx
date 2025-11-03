@@ -199,7 +199,7 @@ export default function Theme({ onNewclick, onOldclick, }) {
                   <small>Name:</small>
                   <strong className="ms-1">{userData?.name || "User"}</strong>
                 </li>
-                <li className="ps-2">
+                <li className="ps-2 overflow-hidden">
                   <small>Signed in as:</small>{" "}
                   {/* <br /> */}
                   <strong>{userData?.email}</strong>
