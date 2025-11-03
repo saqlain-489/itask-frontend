@@ -1,0 +1,13 @@
+.error{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+
+}
+.error h2{
+    font-size: 60px;
+    font-weight: 700;
+}
+ 

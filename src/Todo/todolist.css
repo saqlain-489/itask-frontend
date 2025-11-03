@@ -1,0 +1,8 @@
+
+.todoheading{
+    display: flex;
+    justify-content: space-between;
+}
+.btngrid{
+    cursor: pointer;
+}
