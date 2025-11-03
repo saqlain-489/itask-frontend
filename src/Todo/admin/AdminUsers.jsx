@@ -21,33 +21,27 @@ export default function AdminUsers() {
     const [search, setSearch] = useState("");
     const [editingUserId, setEditingUserId] = useState(null);
     const [newName, setNewName] = useState("");
-    const [user, setUser] = useState([]);
+    const [user, setUser] = useState(null);
 
     const adminEmail = "j@g.co";
     useEffect(() => {
         async function fetchData() {
-
-            // }
             try {
-
                 const token = localStorage.getItem('token')
-                const res = await fetch(`http://localhost:3000/api/users/me`,
-                    {
-                        method: "GET",
-                        headers: {
-                            "Authorization": `Bearer ${token}`,
-                            "Content-Type": "application/json",
-                        },
-
-                    }
-                )
+                const res = await fetch(`http://localhost:3000/api/users/me`, {
+                    method: "GET",
+                    headers: {
+                        "Authorization": `Bearer ${token}`,
+                        "Content-Type": "application/json",
+                    },
+                })
                 const data = await res.json();
-                console.log(data)
-                setUser(data)
-                console.log(user)
-
+                console.log('User data:', data);
+                setUser(data);
             } catch (err) {
                 console.error("Error fetching data:", err);
+            } finally {
+                setLoading(false); // Set loading to false after fetch
             }
         }
 
@@ -194,7 +188,7 @@ export default function AdminUsers() {
         if (!confirmDelete) return;
 
         try {
-           
+
             const token = localStorage.getItem('token')
             // console.log("Updating user:", userId, "with name:", newName);
 
@@ -204,7 +198,7 @@ export default function AdminUsers() {
                     "Authorization": `Bearer ${token}`,
                     "Content-Type": "application/json",
                 },
-               
+
             })
 
             console.log("Response status:", res.status);
@@ -222,6 +216,21 @@ export default function AdminUsers() {
         } catch (err) {
             toast.error("Error deleting user:", err);
         }
+    }
+    if (!user || user.role !== 'admin') {
+        return (
+            <div
+                className="d-flex justify-content-center align-items-center text-black p-2 text-center"
+                style={{ height: "100vh", background: "aliceblue" }}
+            >
+                <h2>
+                    Access Denied! <br />
+                    Please login with your <span className="text-danger fw-bold">
+                        <Link to='/Signin' className=" text-decoration-none">Admin email</Link>
+                    </span> to view this page.
+                </h2>
+            </div>
+        );
     }
 
     if (loading) {
@@ -294,23 +303,14 @@ export default function AdminUsers() {
         );
     }
 
-    if (user.role === 'user') {
-        return (
-            <div
-                className="d-flex justify-content-center align-items-center text-black p-2 text-center"
-                style={{ height: "100vh", background: "aliceblue" }}
-            >
-                <h2>
-                    Access Denied! <br />
-                    Please login with your <span className="text-danger fw-bold">
-                        <Link to='/Signin' className=" text-decoration-none">Admin email</Link>
-                    </span> to view this page.
-                </h2>
-            </div>
-        );
-    }
+    // if (!user) {
+    //     return <div>Loading...</div>;
+    // }
+
+    // console.log('Current user role:', user.role); // Debug log
 
 
+    // {(user.role !== 'admin')}
     return (
         <div className="admin-page d-flex">
             <div className="sidepanel">

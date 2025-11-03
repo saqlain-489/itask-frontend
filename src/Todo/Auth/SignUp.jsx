@@ -32,7 +32,7 @@ export default function SignUp() {
         email: email,
         password: password
       };
-      const r = await fetch('http://localhost:3000/api/register', {
+      const r = await fetch('http://localhost:3000/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -91,7 +91,21 @@ export default function AdminDashboard() {
     fetchTodosNumber();
     setLoading(false)
   }, []);
-
+  if (user.role === 'user') {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center text-black p-2 text-center"
+        style={{ height: "100vh", background: "aliceblue" }}
+      >
+        <h2>
+          Access Denied! <br />
+          Please login with your <span className="text-danger fw-bold">
+            <Link to='/Signin' className=" text-decoration-none">Admin email</Link>
+          </span> to view this page.
+        </h2>
+      </div>
+    );
+  }
   const token = localStorage.getItem('token')
   if (!token) {
     return (
@@ -109,21 +123,7 @@ export default function AdminDashboard() {
     );
   }
 
-  if (user.role === 'user') {
-    return (
-      <div
-        className="d-flex justify-content-center align-items-center text-black p-2 text-center"
-        style={{ height: "100vh", background: "aliceblue" }}
-      >
-        <h2>
-          Access Denied! <br />
-          Please login with your <span className="text-danger fw-bold">
-            <Link to='/Signin' className=" text-decoration-none">Admin email</Link>
-          </span> to view this page.
-        </h2>
-      </div>
-    );
-  }
+
 
 
   return (
