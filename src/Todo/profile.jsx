@@ -8,6 +8,11 @@ import { auth, db } from "./firebaseConfig";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import { fetchUserPreferences } from "./fetchUserPreferences";
+import { useDispatch } from "react-redux";
+import { logout } from "../Todo/store/authslice";
+import { removetodos } from "../Todo/store/todoslice";
+import { fetchWithAuth } from "../Todo/store/todoslice";
+
 
 export default function Profile() {
     const [user, setUser] = useState(null);
@@ -19,6 +24,7 @@ export default function Profile() {
     const [editName, seteditName] = useState('');
     const [isLight, setislight] = useState(true);
 
+    const dispatch = useDispatch();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -27,20 +33,19 @@ export default function Profile() {
     // Track authentication
     let data;
     useEffect(() => {
-        async function getuser(params) {
+        async function getuser() {
 
             try {
-                const token = localStorage.getItem('token')
-                const res = await fetch("http://localhost:3000/api/users/me", {
+                const res = await fetchWithAuth("http://localhost:3000/api/users/me", {
                     method: "GET",
                     headers: {
-                        "Authorization": `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
                 })
                 data = await res.json();
-                console.log(data)
                 setUserData(data)
+                if (!res.ok) return () => { console.log('jhgh') }
+
             }
             catch (err) {
                 console.error("Error fetching user data:", err);
@@ -102,15 +107,12 @@ export default function Profile() {
 
             const imageUrl = data.secure_url;
 
-            // const userRef = doc(db, "todo", user.uid);
-            // await updateDoc(userRef, { profilePic: imageUrl });
-            const token = localStorage.getItem('token')
-            const res2 = await fetch(`http://localhost:3000/api/users/me`,
+
+            const res2 = await fetchWithAuth(`http://localhost:3000/api/users/me`,
                 {
                     method: "PATCH",
                     headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         profilePic: imageUrl
@@ -133,9 +135,12 @@ export default function Profile() {
     // Logout
     const handleLogout = async () => {
         try {
-            localStorage.removeItem("token");
+
+            dispatch(removetodos());
+            dispatch(logout());
             setUser(null);
             setUserData(null);
+
             navigate("/Signin");
             toast.success("Logged out successfully!");
         } catch (error) {
@@ -161,15 +166,12 @@ export default function Profile() {
 
         try {
             setIsediting(false);
-            // const userRef = doc(db, "todo", user.uid);
-            // await updateDoc(userRef, { name: editName });
-            const token = localStorage.getItem('token')
-            const res2 = await fetch(`http://localhost:3000/api/users/me`,
+
+            const res2 = await fetchWithAuth(`http://localhost:3000/api/users/me`,
                 {
                     method: "PATCH",
                     headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         name: editName
@@ -219,7 +221,7 @@ export default function Profile() {
             </div>
         );
     }
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('accesstoken')
     if (!token) {
         return (
             <div
@@ -332,7 +334,7 @@ export default function Profile() {
                             Save Name <i className="bi bi-check-lg"></i>
                         </button>
                     ) : (
-                        <button className="btn btn-primary mt-3 me-1" onClick={() => {setIsediting(true); seteditName(userData?.name)}}>
+                        <button className="btn btn-primary mt-3 me-1" onClick={() => { setIsediting(true); seteditName(userData?.name) }}>
                             Edit Name <i className="bi bi-pencil"></i>
                         </button>
                     )}

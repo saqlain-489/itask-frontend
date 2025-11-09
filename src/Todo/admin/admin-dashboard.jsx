@@ -5,108 +5,93 @@ import { auth, db } from "../firebaseConfig";
 import { Link } from "react-router-dom";
 import 'react-loading-skeleton/dist/skeleton.css';
 import Skeleton from "react-loading-skeleton";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchTodos, fetchUsersData } from "../store/adminslice";
 
 
 export default function AdminDashboard() {
-  const [totalUsers, setTotalUsers] = useState(0);
-  const [totalTodos, setTotalTodos] = useState(0);
-  const [avgTodos, setAvgTodos] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [user, setUser] = useState([]);
 
-  const adminEmail = "j@g.co";
 
- 
+  const { user } = useSelector((state) => state.auth);
+  const { users, totalUsers, isLoading, todos, totalTodos, avgTodos } = useSelector((state) => state.admin);
+  const dispatch = useDispatch()
   useEffect(() => {
-    async function fetchData() {
+    console.log(users)
+    // console.log(users)
+    // async function fetchData() {
 
-      // }
-      try {
+    //   // }
+    //   try {
 
-        const token = localStorage.getItem('token')
-        const res = await fetch(`http://localhost:3000/api/users/me`,
-          {
-            method: "GET",
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
+    //     const token = localStorage.getItem('accesstoken')
+    //     const res = await fetch(`http://localhost:3000/api/users/me`,
+    //       {
+    //         method: "GET",
+    //         headers: {
+    //           "Authorization": `Bearer ${token}`,
+    //           "Content-Type": "application/json",
+    //         },
 
-          }
-        )
-        const data = await res.json();
-        setUser(data)
+    //       }
+    //     )
+    //     const data = await res.json();
+    //     console.log(data)
+    //     setUser(data)
 
-      } catch (error) {
-        console.error("Error fetching data:", err);
-      }
-    }
+    //   } catch (error) {
+    //     console.error("Error fetching data:", err);
+    //   }
+    // }
 
-    async function fetchUserNumber() {
-      const token = localStorage.getItem('token');
+    // async function fetchUserNumber() {
+    //   const token = localStorage.getItem('accesstoken');
 
-      const res = await fetch('http://localhost:3000/api/users/all', {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-
-      if (!res.ok) {
-        console.error("Failed to fetch users:", res.status, res.statusText);
-        return;
-      }
-
-      const data = await res.json();
-      setTotalUsers(data.total)
-    }
-    async function fetchTodosNumber() {
-      const token = localStorage.getItem('token');
-
-      const res = await fetch('http://localhost:3000/api/todos/all', {
-        method: "GET",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      });
+    //   const res = await fetch('http://localhost:3000/api/users/all', {
+    //     method: "GET",
+    //     headers: {
+    //       "Authorization": `Bearer ${token}`,
+    //       "Content-Type": "application/json",
+    //     },
+    //   });
 
 
-      if (!res.ok) {
-        console.error("Failed to fetch users:", res.status, res.statusText);
-        return;
-      }
+    //   if (!res.ok) {
+    //     console.error("Failed to fetch users:", res.status, res.statusText);
+    //     return;
+    //   }
 
-      const data = await res.json();
-      console.log(data)
-      setTotalTodos(data.total_todos)
-    }
-    // setAvgTodos()
-    // console.log(avgTodos)
+    //   const data = await res.json();
+    //   console.log(data)
+    //   setTotalUsers(data.total)
+    // }
+    // async function fetchTodosNumber() {
+    //   const token = localStorage.getItem('accesstoken');
 
-    fetchData();
-    fetchUserNumber();
-    fetchTodosNumber();
+    //   const res = await fetch('http://localhost:3000/api/todos/all', {
+    //     method: "GET",
+    //     headers: {
+    //       "Authorization": `Bearer ${token}`,
+    //       "Content-Type": "application/json",
+    //     },
+    //   });
+
+
+    //   if (!res.ok) {
+    //     console.error("Failed to fetch users:", res.status, res.statusText);
+    //     return;
+    //   }
+
+    //   const data = await res.json();
+    //   console.log(data)
+    //   setTotalTodos(data.total_todos)
+    // }
+    dispatch(fetchUsersData())
+    dispatch(fetchTodos())
     setLoading(false)
-  }, []);
-  if (user.role === 'user') {
-    return (
-      <div
-        className="d-flex justify-content-center align-items-center text-black p-2 text-center"
-        style={{ height: "100vh", background: "aliceblue" }}
-      >
-        <h2>
-          Access Denied! <br />
-          Please login with your <span className="text-danger fw-bold">
-            <Link to='/Signin' className=" text-decoration-none">Admin email</Link>
-          </span> to view this page.
-        </h2>
-      </div>
-    );
-  }
-  const token = localStorage.getItem('token')
+  }, [dispatch]);
+
+  const token = localStorage.getItem('accesstoken')
   if (!token) {
     return (
       <div
@@ -122,9 +107,21 @@ export default function AdminDashboard() {
       </div>
     );
   }
-
-
-
+  if (user.role === 'user') {
+    return (
+      <div
+        className="d-flex justify-content-center align-items-center text-black p-2 text-center"
+        style={{ height: "100vh", background: "aliceblue" }}
+      >
+        <h2>
+          Access Denied! <br />
+          Please login with your <span className="text-danger fw-bold">
+            <Link to='/Signin' className=" text-decoration-none">Admin email</Link>
+          </span> to view this page.
+        </h2>
+      </div>
+    );
+  }
 
   return (
     <div className="d-flex">
@@ -161,7 +158,7 @@ export default function AdminDashboard() {
 
               <div className="card shadow-sm p-3 text-center" style={{ width: "250px", borderRadius: "12px" }}>
                 <h5>Avg Todos per User</h5>
-                <h3 className="fw-bold text-warning">{Math.ceil(totalUsers/totalUsers)}</h3>
+                <h3 className="fw-bold text-warning">{Math.ceil(avgTodos)}</h3>
               </div>
             </div>
           )}

@@ -1,15 +1,19 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signOut, onAuthStateChanged } from "firebase/auth";
-import { auth } from "./firebaseConfig";
-import { doc, updateDoc, getDocs } from "firebase/firestore";
+// import { signOut, onAuthStateChanged } from "firebase/auth";
+// import { auth } from "./firebaseConfig";
+
 import { toast } from "react-hot-toast";
-import { db, } from "./firebaseConfig";
+// import { db, } from "./firebaseConfig";
 import Skeleton from "react-loading-skeleton";
-import { getDoc } from "firebase/firestore";
+
 import "react-loading-skeleton/dist/skeleton.css";
-import { fetchUserPreferences } from "./fetchUserPreferences";
-import { collection } from "firebase/firestore";
+import { useDispatch } from "react-redux";
+import { logout } from "../Todo/store/authslice";
+import { fetchWithAuth, removetodos } from "../Todo/store/todoslice";
+
+
+
 
 let lighttheme = "bi bi-moon-fill fs-4 ";
 let darktheme = "bi bi-brightness-high-fill fs-4 text-light ";
@@ -22,13 +26,13 @@ export default function Theme({ onNewclick, onOldclick, }) {
   const [islight, setislight] = useState(true)
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsubscribe();
-  }, []);
+  const dispatch = useDispatch();
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+  //     setUser(currentUser);
+  //   });
+  //   return () => unsubscribe();
+  // }, []);
   //  Fetch user preferences from Firestore
   // useEffect(() => {
   //   fetchUserPreferences(user, setislight);
@@ -43,18 +47,17 @@ export default function Theme({ onNewclick, onOldclick, }) {
         // const userRef = doc(db, "todo", user.uid);
         // const docSnap = await getDoc(userRef);
         // const data = docSnap.data();
-        const token = localStorage.getItem('token')
 
-        const res = await fetch("http://localhost:3000/api/users/me",
+        const res = await fetchWithAuth("http://localhost:3000/api/users/me",
           {
             method: "GET",
             headers: {
-              "Authorization": `Bearer ${token}`,
               "Content-Type": "application/json",
             },
 
           }
         )
+      
         const data = await res.json();
         if (data.light) {
           document.body.classList.remove("dark");
@@ -66,7 +69,6 @@ export default function Theme({ onNewclick, onOldclick, }) {
 
         }
         setuserData(data)
-        console.log("Fetched user data:", data);
         setLoading(false)
       } catch (error) {
         console.error("Error fetching users:", error);
@@ -82,7 +84,8 @@ export default function Theme({ onNewclick, onOldclick, }) {
   // Logout
   const handleLogout = async () => {
     try {
-      localStorage.removeItem("token");
+      dispatch(removetodos());
+      dispatch(logout());
       setUser(null);
       navigate("/Signin");
       toast.success("Logged out successfully!");
@@ -100,13 +103,11 @@ export default function Theme({ onNewclick, onOldclick, }) {
       const newtheme = !islight;
       setislight(newtheme);
 
-      const token = localStorage.getItem('token')
-      const res = await fetch(`http://localhost:3000/api/users/me`,
+      const res = await fetchWithAuth(`http://localhost:3000/api/users/me`,
         {
           method: "PATCH",
           headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
+            "Content-Type": "application/json"
           },
           body: JSON.stringify({
             light: newtheme
@@ -157,7 +158,7 @@ export default function Theme({ onNewclick, onOldclick, }) {
               data-bs-auto-close="outside"
 
               type="button" data-bs-toggle="dropdown" aria-expanded="false">
-              <i class="bi bi-person-circle fs-4"></i>
+              <i className="bi bi-person-circle fs-4"></i>
 
             </button>
             <ul className="dropdown-menu border-0 w-100 p-0 ">
@@ -217,7 +218,7 @@ export default function Theme({ onNewclick, onOldclick, }) {
                 </button>
                 <button onClick={() => navigate('/profile')} className="   sprofilebtn ">
                   Edit Profile {'   '}
-                  <i class="bi bi-pen"></i>
+                  <i className="bi bi-pen"></i>
                 </button>
               </li>
             </ul>

@@ -134,12 +134,12 @@ export default function Sidepanel() {
         <h4>iTask</h4>
 
         <div >
-          <Link to='/todo' className="sidebtn fw-bold d-flex align-items-center">
+          <Link to='/Todos' className="sidebtn fw-bold d-flex align-items-center">
             <i className="bi bi-card-checklist fs-4"></i>
             Todos
           </Link>
           <Link to='/profile' className="sidebtn fw-bold d-flex align-items-center">
-            <i class="bi bi-person-circle fs-4"></i>
+            <i className="bi bi-person-circle fs-4"></i>
             Profile
           </Link>
         </div>

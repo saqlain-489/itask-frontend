@@ -8,7 +8,7 @@ import { toast } from "react-hot-toast";
 import { db, } from "./firebaseConfig";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-
+import {fetchWithAuth} from '../Todo/store/todoslice'
 
 
 
@@ -21,11 +21,10 @@ export default function Todolist({ todos, onClick, delClick, loading }) {
     useEffect(() => {
         async function getsavedview() {
             try {
-                const token = localStorage.getItem('token')
-                const res = await fetch("http://localhost:3000/api/users/me", {
+           
+                const res = await fetchWithAuth("http://localhost:3000/api/users/me", {
                     method: "GET",
                     headers: {
-                        "Authorization": `Bearer ${token}`,
                         "Content-Type": "application/json",
                     },
                 })
@@ -54,13 +53,12 @@ export default function Todolist({ todos, onClick, delClick, loading }) {
             const newView = !view;
             setView(newView);
 
-            const token = localStorage.getItem('token')
-            const res = await fetch(`http://localhost:3000/api/users/me`,
+ 
+            const res = await fetchWithAuth(`http://localhost:3000/api/users/me`,
                 {
                     method: "PATCH",
                     headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
+                        "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
                         view: newView
@@ -108,7 +106,7 @@ export default function Todolist({ todos, onClick, delClick, loading }) {
                     className="btn "
                     onClick={() => { setviewvalue() }}>
 
-                    <i class="bi bi-view-list fs-3"></i>
+                    <i className="bi bi-view-list fs-3"></i>
                 </button>
             </div>
             <ul >

@@ -1,76 +1,84 @@
 import { useEffect, useState } from "react";
-import {
-    collection,
-    getDocs,
-    updateDoc,
-    deleteDoc,
-    doc,
-    collectionGroup,
-} from "firebase/firestore";
-import { db } from "../firebaseConfig";
 import AdminSidebar from "./adminSidebar";
 import { toast } from "react-hot-toast";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import { auth } from '../firebaseConfig';
+import { useDispatch, useSelector } from "react-redux";
+import { editUserName, fetchTodos, fetchUsersData } from "../store/adminslice";
+
 import { Link } from "react-router-dom";
+// import { deleteUser } from "firebase/auth";
+import { deleteUser } from "../store/adminslice";
 
 export default function AdminUsers() {
-    const [users, setUsers] = useState([]);
+    // const [Users, setUsers] = useState([]);
     const [loading, setLoading] = useState(true);
     const [search, setSearch] = useState("");
     const [editingUserId, setEditingUserId] = useState(null);
     const [newName, setNewName] = useState("");
-    const [user, setUser] = useState(null);
+    // const [user, setUser] = useState(null);
 
-    const adminEmail = "j@g.co";
+    const { user } = useSelector((state) => state.auth);
+    const { users } = useSelector((state) => state.admin);
+    const dispatch = useDispatch();
+
     useEffect(() => {
-        async function fetchData() {
-            try {
-                const token = localStorage.getItem('token')
-                const res = await fetch(`http://localhost:3000/api/users/me`, {
-                    method: "GET",
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json",
-                    },
-                })
-                const data = await res.json();
-                console.log('User data:', data);
-                setUser(data);
-            } catch (err) {
-                console.error("Error fetching data:", err);
-            } finally {
-                setLoading(false); // Set loading to false after fetch
-            }
-        }
+        // setUsers(users);
+        // console.log(Users)
+        dispatch(fetchUsersData())
+        setTimeout( () => {
 
-        async function fetchAllUsers() {
-            const token = localStorage.getItem('token');
+             setLoading(false)
+        }, 300);
+    }, [dispatch]);
 
-            const res = await fetch('http://localhost:3000/api/users/all', {
-                method: "GET",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-            });
+    useEffect(() => {
+        // async function fetchData() {
+        //     try {
+        //         const token = localStorage.getItem('accesstoken')
+        //         const res = await fetch(`http://localhost:3000/api/users/me`, {
+        //             method: "GET",
+        //             headers: {
+        //                 "Authorization": `Bearer ${token}`,
+        //                 "Content-Type": "application/json",
+        //             },
+        //         })
+        //         const data = await res.json();
+        //         console.log('User data:', data);
+        //         setUser(data);
+        //     } catch (err) {
+        //         console.error("Error fetching data:", err);
+        //     } finally {
+        //         setLoading(false); // Set loading to false after fetch
+        //     }
+        // }
+
+        // async function fetchAllUsers() {
+        //     const token = localStorage.getItem('token');
+
+        //     const res = await fetch('http://localhost:3000/api/users/all', {
+        //         method: "GET",
+        //         headers: {
+        //             "Authorization": `Bearer ${token}`,
+        //             "Content-Type": "application/json",
+        //         },
+        //     });
 
 
-            if (!res.ok) {
-                console.error("Failed to fetch users:", res.status, res.statusText);
-                return;
-            }
+        //     if (!res.ok) {
+        //         console.error("Failed to fetch users:", res.status, res.statusText);
+        //         return;
+        //     }
 
-            const data = await res.json();
-            console.log('sad', data)
-            setUsers(data.data)
+        //     const data = await res.json();
+        //     console.log('sad', data)
+        //     setUsers(data.data)
 
-            setLoading(false)
-        }
+        //     setLoading(false)
+        // }
 
-        fetchData();
-        fetchAllUsers();
+        // fetchData();
+        // fetchAllUsers();
     }, []);
 
     // useEffect(() => {
@@ -139,45 +147,19 @@ export default function AdminUsers() {
     //     }
     // }
     async function handleEdit(userId) {
-        if (!newName.trim()) return alert("Name cannot be empty.");
-
+        if (!newName.trim()) return toast.error("Name cannot be empty.");
         try {
-            const token = localStorage.getItem('token')
-            console.log("Updating user:", userId, "with name:", newName);
 
-            const res = await fetch(`http://localhost:3000/api/users/${userId}`, {
-                method: "PATCH",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    name: newName
-                })
-            })
-
-            console.log("Response status:", res.status);
-
-            if (!res.ok) {
-                const errorText = await res.text();
-                console.error("Error response:", errorText);
-                toast.error(`Failed to update: ${res.status}`);
-                return;
-            }
-
-            const data = await res.json();
-            console.log("Updated user data:", data);
-            setUsers((prev) =>
-                prev.map((u) => (u._id === userId ? { ...u, name: newName } : u))
-            );
+            dispatch(editUserName({ userId, newName }));
             setEditingUserId(null);
             setNewName("");
             toast.success("Name updated successfully  ");
-
         } catch (err) {
-            console.error("Error updating name:", err);
-            toast.error("Error updating name: " + err.message);
+            toast.error("Error updating name:", err);
+            console.log(err)
+
         }
+
     }
 
     // ❌ Delete user
@@ -186,36 +168,72 @@ export default function AdminUsers() {
             "Are you sure you want to delete this user and all their tasks?"
         );
         if (!confirmDelete) return;
-
         try {
 
-            const token = localStorage.getItem('token')
-            // console.log("Updating user:", userId, "with name:", newName);
-
-            const res = await fetch(`http://localhost:3000/api/users/${userId}`, {
-                method: "DELETE",
-                headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Content-Type": "application/json",
-                },
-
-            })
-
-            console.log("Response status:", res.status);
-
-            if (!res.ok) {
-                const errorText = await res.text();
-                console.error("Error response:", errorText);
-                toast.error(`Failed to update: ${res.status}`);
-                return;
-            }
-
-            // const data = await res.json();
-            setUsers((prev) => prev.filter((u) => u._id !== userId));
+            dispatch(deleteUser(userId));
             toast.success("User deleted successfully ");
+
         } catch (err) {
             toast.error("Error deleting user:", err);
+            console.log(err)
         }
+    }
+
+
+    if (loading) {
+        return (
+            <div className="admin-page d-flex">
+                <div className="sidepanel">
+                    <AdminSidebar />
+                </div>
+
+                <div
+                    className="flex-grow-1 p-4"
+                    style={{ background: "#f8f9fa", minHeight: "100vh" }}
+                >
+                    <h2 className="mb-4 fw-bold text-center">👥 All Users</h2>
+
+                    {/*  Search bar */}
+                    <div className="mb-4 text-center">
+                        <input
+                            type="text"
+                            className="form-control w-50 mx-auto"
+                            placeholder="Search by name ..."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                        />
+                    </div>
+                    <div className="table-responsive">
+                        <table className="table table-striped table-bordered text-center align-middle">
+                            <thead className="table-dark">
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Email</th>
+                                    <th>User Id</th>
+                                    <th>Created At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {Array(users?.length || 6).fill().map((_, index) => (
+                                    <tr key={index}>
+                                        <td><Skeleton height={20} width={50} /></td>
+                                        <td><Skeleton height={20} width={150} /></td>
+                                        <td><Skeleton height={20} width={150} /></td>
+                                        <td><Skeleton height={20} width={150} /></td>
+                                        <td className="d-flex justify-content-center gap-2">
+                                            <Skeleton height={30} width={30} />
+                                            <Skeleton height={30} width={40} />
+                                        </td>
+                                    </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        );
     }
     if (!user || user.role !== 'admin') {
         return (
@@ -232,61 +250,7 @@ export default function AdminUsers() {
             </div>
         );
     }
-
-    if (loading) {
-        return (
-            <div className="admin-page d-flex">
-                <div className="sidepanel">
-                    <AdminSidebar />
-                </div>
-
-                <div
-                    className="flex-grow-1 p-4"
-                    style={{ background: "#f8f9fa", minHeight: "100vh" }}
-                >
-                    <h2 className="mb-4 fw-bold text-center">👥 All Users</h2>
-
-                    {/* 🔍 Search bar */}
-                    <div className="mb-4 text-center">
-                        <input
-                            type="text"
-                            className="form-control w-50 mx-auto"
-                            placeholder="Search by name ..."
-                            value={search}
-                            onChange={(e) => setSearch(e.target.value)}
-                        />
-                    </div>
-                    <div className="table-responsive">
-                        <table className="table table-striped table-bordered text-center align-middle">
-                            <thead className="table-dark">
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Email</th>
-                                    <th>Created At</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {Array(users?.length || 6).fill().map((_, index) => (
-                                    <tr key={index}>
-                                        <td><Skeleton height={20} width={174} /></td>
-                                        <td><Skeleton height={20} width={67} /></td>
-                                        <td><Skeleton height={20} width={100} /></td>
-                                        <td className="d-flex justify-content-center gap-2">
-                                            <Skeleton height={30} width={60} />
-                                            <Skeleton height={30} width={60} />
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-        );
-    }
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem('accesstoken')
     if (!token) {
         return (
             <div
@@ -303,14 +267,7 @@ export default function AdminUsers() {
         );
     }
 
-    // if (!user) {
-    //     return <div>Loading...</div>;
-    // }
 
-    // console.log('Current user role:', user.role); // Debug log
-
-
-    // {(user.role !== 'admin')}
     return (
         <div className="admin-page d-flex">
             <div className="sidepanel">
@@ -323,7 +280,7 @@ export default function AdminUsers() {
             >
                 <h2 className="mb-4 fw-bold text-center">👥 All Users</h2>
 
-                {/* 🔍 Search bar */}
+                {/*  Search bar */}
                 <div className="mb-4 text-center">
                     <input
                         type="text"
@@ -331,10 +288,11 @@ export default function AdminUsers() {
                         placeholder="Search by name ..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
+                        
                     />
                 </div>
 
-                {/* 🧑‍💻 User list */}
+                {/*  User list */}
 
 
                 {filteredUsers.length > 0 ? (

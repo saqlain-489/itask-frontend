@@ -1,107 +1,28 @@
 import AdminSidebar from './adminSidebar';
 import { useEffect, useState, useMemo } from "react";
-import {
-  collectionGroup,
-  getDocs,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
-import { db } from "../firebaseConfig";
 import { toast } from "react-hot-toast";
 import { Link } from 'react-router-dom';
 import Skeleton from "react-loading-skeleton";
-import Pagination from '../pagination';
-import { auth } from '../firebaseConfig';
+import { useSelector, useDispatch } from 'react-redux';
+import { editUserName, fetchTodos, fetchUsersData, setPage, deleteTodo } from "../store/adminslice";
+import { fetchWithAuth } from "../store/todoslice";
+
+
+
 
 export default function AdminTodos() {
-  const [todos, setTodos] = useState([]);
   const [search, setSearch] = useState("");
-  const [loading, setLoading] = useState(true);
-  const [page, setPage] = useState(1);
-  const [PostperPage] = useState(9);
-  const [HasNextPage, setHasNextPage] = useState(true);
-  const [totalTodos, setTotalTodos] = useState(0);
-  const [user, setUser] = useState([]);
+  const PostperPage = 9;
 
-  // const adminEmail = "j@g.co";
+  const { user } = useSelector((state) => state.auth);
+  const { todos, totalTodos, avgTodos, page, totalPages, isLoading } = useSelector((state) => state.admin);
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    async function fetchData() {
 
-      // }
-      try {
+    dispatch(fetchTodos(page));
+  }, [dispatch, page]);
 
-        const token = localStorage.getItem('token')
-        const res = await fetch(`http://localhost:3000/api/users/me`,
-          {
-            method: "GET",
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-
-          }
-        )
-        const data = await res.json();
-        console.log(data)
-        setUser(data)
-        console.log(user)
-
-      } catch (err) {
-        console.error("Error fetching data:", err);
-      }
-    }
-
-    
-    fetchData();
-    fetchTodos(1);
-    setLoading(false)
-  }, []);
-
-  async function fetchTodos(pageNum = page) {
-    const token = localStorage.getItem('token');
-
-    const res = await fetch(`http://localhost:3000/api/todos/all?page=${pageNum}&pageSize=${PostperPage}`, {
-      method: "GET",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
-
-
-    if (!res.ok) {
-      console.error("Failed to fetch todos:", res.status, res.statusText);
-      return;
-    }
-
-    const data = await res.json();
-    setTodos(data.data);
-    setTotalTodos(data.total_todos);
-    setHasNextPage(data.data.length === PostperPage);
-  }
-
-  // useEffect(() => {
-  //   async function fetchUsersdata() {
-  //     try {
-  //       if (!user || user.email !== adminEmail) return;
-
-  //       const snapshot = await getDocs(collectionGroup(db, 'tasks'));
-  //       const data = snapshot.docs.map((doc) => ({
-  //         id: doc.id,
-  //         path: doc.ref.path,
-  //         ...doc.data(),
-  //       }));
-  //       setTodos(data);
-  //       setLoading(false)
-  //       console.log("Fetched todos:", data);
-  //     } catch (error) {
-  //       toast.error('Error fetching data');
-  //       console.error(error);
-  //     }
-  //   }
-
-  //   fetchUsersdata();
-  // }, [user]);
 
   const filteredTodos = useMemo(() => {
     if (!search.trim()) return todos;
@@ -110,34 +31,30 @@ export default function AdminTodos() {
     );
   }, [search, todos]);
 
-  async function delClick(todoId) {
-    try {
-      const token = localStorage.getItem('token'); // ✅ Define token HERE
-      
-      const res = await fetch(`http://localhost:3000/api/todos/${todoId}`, {
-        method: "DELETE",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
+  // async function delClick(todoId) {
+  //   try {
+  //     const res = await fetchWithAuth(`http://localhost:3000/api/todos/${todoId}`, {
+  //       method: "DELETE",
+  //       headers: {
+  //         "Content-Type": "application/json",
+  //       },
+  //     });
 
-      console.log("Response status:", res.status);
+  //     if (!res.ok) {
+  //       const errorText = await res.text();
+  //       console.error("Error response:", errorText);
+  //       toast.error(`Failed to delete: ${res.status}`);
+  //       return;
+  //     }
 
-      if (!res.ok) {
-        const errorText = await res.text();
-        console.error("Error response:", errorText);
-        toast.error(`Failed to delete: ${res.status}`);
-        return;
-      }
-
-      setTodos((prev) => prev.filter((t) => t._id !== todoId));
-      toast.success("Todo deleted successfully!");
-    } catch (err) {
-      console.error("Error deleting todo:", err);
-      toast.error("Error deleting todo: " + err.message);
-    }
-  }
+  //     // re-fetch current page after successful delete
+  //     dispatch(fetchTodos(page));
+  //     toast.success("Todo deleted successfully!");
+  //   } catch (err) {
+  //     console.error("Error deleting todo:", err);
+  //     toast.error("Error deleting todo: " + err.message);
+  //   }
+  // }
 
   // const lastIndex = currentPage * PostperPage;
   // const firstIndex = lastIndex - PostperPage;
@@ -159,17 +76,17 @@ export default function AdminTodos() {
     );
   }
 
-  if (loading) {
+  if (isLoading) {
     return (
       <div className="d-flex">
         <div className="sidepanel">
           <AdminSidebar />
         </div>
-        <div className="admin-content w-75 p-4">
+        <div className="admin-content  p-4" style={{ width: '80%' }}>
           <div className="mb-4 text-center">
             <input
               type="text"
-              className="form-control w-50 mx-auto"
+              className="form-control w-75 ms-3"
               placeholder="Search by User Id"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
@@ -179,30 +96,29 @@ export default function AdminTodos() {
           <div className="todoheading d-flex justify-content-between align-items-center">
             <h2 className="py-md-3 py-0">All Todos <i className="bi bi-card-checklist"></i></h2>
           </div>
-          <ul className='d-flex gap-3 flex-wrap'>
-            {Array(4).fill(0).map((_, i) => (
-              <li key={i} className="p-3 pb-0 border rounded   list-unstyled position-relative " style={{ width: '45%' }}>
-                <h6><Skeleton width={150} /></h6>
-                <h6><Skeleton width={200} /></h6>
-                <h6><Skeleton width={180} /></h6>
-                <h6><Skeleton width={220} /></h6>
-                <h6><Skeleton width={250} /></h6>
-                <h6><Skeleton width={120} /></h6>
-                <h6><Skeleton width={160} /></h6>
+          <ul className="d-flex flex-row flex-wrap justify-content-start ms-0">
+            {Array(6).fill().map((_, index) => (
+              <li key={index} className=" mb-3 ms-3  border rounded position-relative list-unstyled " style={{ width: "30%", height: '340px' }}>
+                <Skeleton width={'100%'} height={'150px'} />
+                <Skeleton width={180} height={20} style={{ marginTop: 10, marginLeft: 10 }} />
+                <Skeleton width={180} height={20} style={{ marginTop: 10, marginLeft: 10 }} />
+                <Skeleton width={200} height={15} style={{ marginTop: 10, marginLeft: 10 }} />
+                <Skeleton width={220} height={15} style={{ marginTop: 10, marginLeft: 10 }} />
+                <Skeleton width={200} height={15} style={{ marginTop: 10, marginLeft: 10 }} />
+                <Skeleton width={240} height={15} style={{ marginTop: 10, marginLeft: 10 }} />
                 <div className="d-flex justify-content-end mt-2">
-                  <Skeleton width={30} height={30} style={{ marginLeft: 8, position: 'absolute', right: '12px', top: '50px' }} />
-                  <Skeleton width={30} height={30} style={{ marginLeft: 8, position: 'absolute', right: '12px', top: '10px' }} />
+                  <Skeleton width={30} height={30} style={{ marginLeft: 8, position: 'absolute', right: '12px', top: '200px' }} />
+                  <Skeleton width={30} height={30} style={{ marginLeft: 8, position: 'absolute', right: '12px', top: '160px' }} />
                 </div>
               </li>
             ))}
-
           </ul>
         </div>
       </div>
 
     )
   }
-  const token = localStorage.getItem('token')
+  const token = localStorage.getItem('accesstoken')
   if (!token) {
     return (
       <div
@@ -245,9 +161,7 @@ export default function AdminTodos() {
             </div>
 
             <ul>
-              {filteredTodos.length === 0 ? (
-                <h2 className="notask">No Todos!</h2>
-              ) : (
+              {filteredTodos.length !== 0 ? (
                 filteredTodos.map((todo) => (
                   <li key={todo._id} className='border-0'>
                     {(todo.Picture) ? <div className="todopic">
@@ -271,10 +185,12 @@ export default function AdminTodos() {
                       className="bi bi-x-lg btnclose"
                       onClick={(e) => {
                         e.stopPropagation();
-                        delClick(todo._id);
+                        dispatch(deleteTodo(todo._id)).then(() => {
+                          dispatch(fetchTodos(page));
+                        });
+
                       }}
                     ></i>
-
 
                     <Link
                       to="/edittodo"
@@ -288,38 +204,41 @@ export default function AdminTodos() {
                     </Link>
                   </li>
                 ))
+              ) : (
+
+                <h2 className="notask">No Todos!</h2>
               )}
             </ul>
           </div>
           <div className="pagination">
-                <button
-                  onClick={async () => {
-                    if (page > 1) {
-                      const newPage = page - 1;
-                      setPage(newPage);
-                      await fetchTodos(newPage);
-                    }
-                  }}
-                  disabled={page === 1}
-                >
-                  Previous
-                </button>
+            <button
+              onClick={() => {
+                if (page > 1) {
+                  dispatch(setPage(page - 1));
+                  dispatch(fetchTodos(page - 1));
+                }
+              }}
+              disabled={page === 1}
+            >
+              Previous
+            </button>
 
-                <span className="mx-3">
-                  Page {page} of {Math.ceil(totalTodos / PostperPage)} ({totalTodos} total)
-                </span>
+            <span className="mx-3">
+              Page {page} of {totalPages} ({totalTodos} total)
+            </span>
 
-                <button
-                  onClick={async () => {
-                    const newPage = page + 1;
-                    await fetchTodos(newPage);
-                    if (HasNextPage) setPage(newPage);
-                  }}
-                  disabled={!HasNextPage}
-                >
-                  Next
-                </button>
-              </div>
+            <button
+              onClick={() => {
+                if (page < totalPages) {
+                  dispatch(setPage(page + 1));
+                  dispatch(fetchTodos(page + 1));
+                }
+              }}
+              disabled={page >= totalPages}
+            >
+              Next
+            </button>
+          </div>
         </div>
       </div>
     </>

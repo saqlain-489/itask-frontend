@@ -2,17 +2,17 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { v4 as uuidv4 } from "uuid";
-// import { db } from "./firebase"; 
 import { db, auth } from "./firebaseConfig";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
 import { toast } from "react-hot-toast";
+import { createTodo } from "../Todo/store/todoslice";
+import { useDispatch } from "react-redux";
+
 
 export default function Inputpage() {
   const [isSending, setIsSending] = useState(false);
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(null);
-
+const dispatch = useDispatch();
 
   const navigate = useNavigate();
   const user = auth.currentUser;
@@ -75,36 +75,39 @@ export default function Inputpage() {
           if (!data.secure_url) throw new Error("Upload failed");
           imageUrl = data.secure_url;
         }
-        const token = localStorage.getItem("token")
-        const res2 = await fetch('http://localhost:3000/api/todos',
-          {
-            method: "POST",
-            body: JSON.stringify({
-              ...values,
-              Title: values.Title,
-              DateTime: values.DateTime,
-                // ? Timestamp.fromDate(new Date(values.DateTime))
-                // : null,
-              checked: false,
-              // userId: user.uid,
-              // createdAt: new Date(),
-              Picture: imageUrl,
-              // searchKeywords: generateSearchKeywords(values.Title)
-            }),
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        )
-        if (!res2.ok) {
-          const err = await res2.text();
-          console.error("Server error:", err);
-          return;
-        }
+        // dispatch(createTodo({...values,imageUrl}))
+        dispatch(createTodo({ values, imageUrl }));
 
-        const data2 = await res2.json();
-        console.log("Todos fetched:", data2);
+        // const token = localStorage.getItem("token")
+        // const res2 = await fetch('http://localhost:3000/api/todos',
+        //   {
+        //     method: "POST",
+        //     body: JSON.stringify({
+        //       ...values,
+        //       Title: values.Title,
+        //       DateTime: values.DateTime,
+        //         // ? Timestamp.fromDate(new Date(values.DateTime))
+        //         // : null,
+        //       checked: false,
+        //       // userId: user.uid,
+        //       // createdAt: new Date(),
+        //       Picture: imageUrl,
+        //       // searchKeywords: generateSearchKeywords(values.Title)
+        //     }),
+        //     headers: {
+        //       "Authorization": `Bearer ${token}`,
+        //       "Content-Type": "application/json",
+        //     },
+        //   }
+        // )
+        // if (!res2.ok) {
+        //   const err = await res2.text();
+        //   console.error("Server error:", err);
+        //   return;
+        // }
+
+        // const data2 = await res2.json();
+        // console.log("Todos fetched:", data2);
 
         // if (!user) {
         //   alert("You must be logged in to add todos!");
@@ -129,7 +132,7 @@ export default function Inputpage() {
         // resetForm();
         // setIsSending(false);
         // setUploading(false);
-        navigate("/todo");
+        navigate("/Todos");
         toast.success("Todo added successfully!");
       } catch (error) {
         console.error("Error adding todo:", error);
@@ -279,7 +282,7 @@ export default function Inputpage() {
           </button>
 
           {/* <Link to={(user.email == 'j@g.co') ? '/admin-dashboard' : "/todo"}> */}
-          <Link to="/todo">
+          <Link to="/Todos">
             <button
               type="button"
               className="btn btn-secondary mt-md-3 mt-1 ms-md-2 ms-0"

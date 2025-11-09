@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-hot-toast";
-import { auth, db } from "../firebaseConfig";
+import { auth, db } from "./firebaseConfig";
 import { createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 // import { post } from "../../express/src/routes";
@@ -41,11 +41,14 @@ export default function SignUp() {
       });
 
       const data = await r.json();
-      localStorage.setItem("token", data.token);
+      console.log(data)
+      localStorage.setItem("accesstoken", data.accesstoken);
+      localStorage.setItem("refreshtoken", data.refreshToken);
+      localStorage.setItem('user', JSON.stringify(data.user))
 
       console.log('Response from server:', data);
       toast.success("Account created successfully!");
-      navigate("/todo");
+      navigate("/Todos");
       setIsSending(false);
 
 

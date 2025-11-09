@@ -1,4 +1,4 @@
-import './todoseacrh.css'
+// import './todoseacrh.css'
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { signOut, onAuthStateChanged } from "firebase/auth";
@@ -12,16 +12,14 @@ import { db } from "./firebaseConfig";
 
 export default function Search({ query, onChange }) {
     const [user, setUser] = useState(null);
-    // const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
-            // setLoading(false);
-        });
-        return () => unsubscribe();
-    }, []);
+    // useEffect(() => {
+    //     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    //         setUser(currentUser);
+    //     });
+    //     return () => unsubscribe();
+    // }, []);
 
 
  

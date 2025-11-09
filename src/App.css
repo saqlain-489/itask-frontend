@@ -665,9 +665,9 @@ footer h4 {
     --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
-* {
+/* * {
     transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
-}
+} */
 
 .search {
     display: flex;

@@ -1,26 +1,22 @@
 import { useState } from "react";
-// import { login } from "./authService";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "react-hot-toast";
-import { auth } from "../firebaseConfig";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import toast from "react-hot-toast";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import { doc, getDoc } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../Todo/store/authslice";
 
 
 const eyeclosed = 'bi bi-eye-slash'
 const eyeopened = 'bi bi-eye'
 export default function SignIn() {
-  // const [email, setEmail] = useState("");
-  // const [password, setPassword] = useState("");
   const [isSending, setIsSending] = useState(false)
   const [show, setshow] = useState(false)
   const [passwordType, setpasswordType] = useState('password')
-  const [userData,setUserData] = useState([])
+  // const [userData, setUserData] = useState([])
   const navigate = useNavigate();
-
+  const dispatch = useDispatch();
+  // const { loading, user, error } = useSelector((state) => state.auth);
 
   // const handleLogin = async (e) => {
   //   e.preventDefault();
@@ -56,75 +52,23 @@ export default function SignIn() {
 
     onSubmit: async (values) => {
       try {
-        setIsSending(true);
+        setIsSending(true)
+        console.log('satrt')
+        const userData = await dispatch(loginUser(values)).unwrap();
 
-        const arr = {
-          email: values.email,
-          password: values.password
-        };
-        const res = await fetch('http://localhost:3000/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(arr)
-        });
-
-        let data;
-        try {
-          data = await res.json();
-        } catch (err) {
-          data = { message: "Invalid server response" };
-        }
-
-        if (!res.ok) {
-          toast.error(data.message || "Login failed. Please try again.");
-          setIsSending(false);
-          return;
-        }
-
-        localStorage.setItem("token", data.token);
-
-        const token = localStorage.getItem('token')
-
-        const res2 = await fetch(`http://localhost:3000/api/users/me`,
-          {
-            method: "GET",
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        )
-        const data2 = await res2.json();
-        // setUserData(data2)
-        console.log('saldj', data2)
-
-        // let user = auth.currentUser
-        // const userDocRef = doc(db, "todo", user.uid);
-        // const userDoc = await getDoc(userDocRef);
-        // const isAdminFromFirestore = userDoc.exists() && userDoc.data().isAdmin === true;
-
-        // if (isAdminFromFirestore) {
-        // } else {
-        // }
-        if (data2.role === 'user') {
-          navigate("/todo");
-          toast.success("Logged in!");
-
-        }
-        else if (data2.role === 'admin') {
-          toast.success("Welcome Admin!");
+        if (userData.role === "user") {
+          navigate("/Todos");
+        } else {
           navigate("/admin-dashboard");
-
         }
-
+        toast.success("Logged in!");
       } catch (err) {
-        toast.error(err.message);
-      } finally {
-        setIsSending(false);
-
+        toast.error(err || "Login failed");
+      } finally{
+        setIsSending(false)
       }
+    },
 
-    }
   });
 
   function handleeye() {
@@ -146,6 +90,8 @@ export default function SignIn() {
           placeholder="Email"
           className="form-control w-75"
           name="email"
+          id="signin-email"
+          list="email-list"
           value={formik.values.email}
           onChange={formik.handleChange}
         />
@@ -153,22 +99,33 @@ export default function SignIn() {
           <div className="text-danger small">{formik.errors.email}</div>
         )}
 
+        <datalist id="email-list">
+          <option value="s@g.co" />
+          <option value="j@g.co" />
+          <option value="saqlainahmad489@gmail.com" />
+        </datalist>
+
         <div className="w-100 d-flex justify-content-center password-container">
           <input
             autoComplete="off"
             placeholder="Password"
             className="form-control w-75"
             name="password"
+            list="pass"
+
             type={passwordType}
             value={formik.values.password}
             onChange={formik.handleChange}
           />
           <i className={show ? eyeopened : eyeclosed} onClick={handleeye}></i>
-
         </div>
         {formik.touched.password && formik.errors.password && (
           <div className="text-danger small">{formik.errors.password}</div>
         )}
+          <datalist id="pass">
+          <option value="123456" />
+
+        </datalist>
         <button type="submit"
           className="btn btn-primary w-75"
           disabled={isSending} >

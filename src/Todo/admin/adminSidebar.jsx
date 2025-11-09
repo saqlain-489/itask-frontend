@@ -4,6 +4,11 @@ import { auth } from "../firebaseConfig";
 import toast from "react-hot-toast";
 import { signOut, onAuthStateChanged } from "firebase/auth";
 import { Link, useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+// import { logout } from "../Todo/store/authslice";
+import { logout } from "../store/authslice";
+// import { removetodos } from "../store/todoslice";
+import{ removealldata} from '../store/adminslice'
 
 
 // icons 
@@ -16,26 +21,28 @@ import { CiLogout } from "react-icons/ci";
 
 export default function AdminSidebar() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+
     const handleLogout = async () => {
         try {
-            await signOut(auth);
-
+            dispatch(removealldata());
+            dispatch(logout());
+            // setUser(null);
             navigate("/Signin");
             toast.success("Logged out successfully!");
         } catch (error) {
             toast.error(error.message);
+            console.log(error);
+
         }
     };
     return (
         <>
             <div className="settings">
 
-                        <h4  >iTask</h4>
-                {/* <div className="d-flex justify-content-center">
-                    <Link to='/iTask' className="sidebtn fw-bold d-flex justify-content-center p-0 w-25 h-25"   >
+                <h4  >iTask</h4>
 
-                    </Link>
-                </div> */}
                 <div >
                     <Link to='/admin-dashboard' className="sidebtn fw-bold  py-2 d-flex align-items-center">
                         <MdSpaceDashboard />

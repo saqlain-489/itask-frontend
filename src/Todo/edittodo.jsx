@@ -23,7 +23,7 @@ export default function Editpage() {
     async function fetchCurrentUser() {
       try {
 
-        const token = localStorage.getItem('token')
+        const token = localStorage.getItem('accesstoken')
         const res = await fetch(`http://localhost:3000/api/users/me`,
           {
             method: "GET",
@@ -137,7 +137,7 @@ export default function Editpage() {
         //   updatedAt: new Date().toISOString(),
         //   Picture: imageUrl,
         // });
-        const token = localStorage.getItem("token")
+        const token = localStorage.getItem("accesstoken")
         const res = await fetch(`http://localhost:3000/api/todos/${todo._id}`,
           {
             method: "PATCH",
@@ -165,7 +165,7 @@ export default function Editpage() {
         const data = await res.json();
         console.log(data)
 
-        if (user.role === 'user' ? navigate("/todo") : navigate("/Admin-Todos"))
+        if (user.role === 'user' ? navigate("/Todos") : navigate("/Admin-Todos"))
 
           setShowSuccess(true);
 
@@ -324,7 +324,7 @@ export default function Editpage() {
             {formik.isSubmitting ? "Updating..." : "Update To-do"}
           </button>
 
-          <Link to={user.role === 'admin' ? "/Admin-Todos" : "/todo"}>
+          <Link to={user.role === 'admin' ? "/Admin-Todos" : "/Todos"}>
             <button
               type="button"
               className="btn btn-secondary text-light mt-3 ms-2"
