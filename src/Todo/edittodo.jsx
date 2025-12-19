@@ -24,7 +24,7 @@ export default function Editpage() {
       try {
 
         const token = localStorage.getItem('accesstoken')
-        const res = await fetch(`${process.env.APP_API_URL}/api/users/me`,
+        const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/users/me`,
           {
             method: "GET",
             headers: {
@@ -138,7 +138,7 @@ export default function Editpage() {
         //   Picture: imageUrl,
         // });
         const token = localStorage.getItem("accesstoken")
-        const res = await fetch(`${process.env.APP_API_URL}/api/todos/${todo._id}`,
+        const res = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/todos/${todo._id}`,
           {
             method: "PATCH",
             headers: {

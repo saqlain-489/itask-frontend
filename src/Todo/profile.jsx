@@ -108,7 +108,7 @@ export default function Profile() {
             const imageUrl = data.secure_url;
 
 
-            const res2 = await fetchWithAuth(`${process.env.APP_API_URL}/api/users/me`,
+            const res2 = await fetchWithAuth(`${import.meta.env.VITE_APP_API_URL}/api/users/me`,
                 {
                     method: "PATCH",
                     headers: {
@@ -167,7 +167,7 @@ export default function Profile() {
         try {
             setIsediting(false);
 
-            const res2 = await fetchWithAuth(`${process.env.APP_API_URL}/api/users/me`,
+            const res2 = await fetchWithAuth(`${import.meta.env.VITE_APP_API_URL}/api/users/me`,
                 {
                     method: "PATCH",
                     headers: {

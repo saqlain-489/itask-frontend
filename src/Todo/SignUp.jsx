@@ -32,7 +32,7 @@ export default function SignUp() {
         email: email,
         password: password
       };
-      const r = await fetch(`${process.env.APP_API_URL}/api/auth/register`, {
+      const r = await fetch(`${import.meta.env.VITE_APP_API_URL}/api/auth/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
