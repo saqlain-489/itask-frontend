@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Link, Navigate } from "react-router-dom";
 import './App.css'
-import TodoContainer from './Todo/Todos.jsx'
+// import TodoContainer from './Todo/todos.jsx'
+import TodoContainer from "./Todo/Todos.jsx"
 import Theme from "./Todo/theme.jsx"
 import Inputpage from "./Todo/todoInput.jsx";
 import Editpage from "./Todo/edittodo.jsx";

@@ -7,7 +7,8 @@ import Search from "./todosearch.jsx";
 import TodoList from "./todolist.jsx";
 import Theme from "./theme.jsx";
 import Sidepanel from "./sidepanel.jsx";
-import { fetchTodos, deleteTodo, toggleTodo, sortNewest, sortOldest, setPage, searchTodos } from "../Todo/store/todoslice.js";
+import { fetchTodos, deleteTodo, toggleTodo, sortNewest, sortOldest, setPage, searchTodos } from "./store/todoslice.js";
+// import ChatWidget from "./chat.jsx";
 
 export default function TodoContainer() {
     const [searchquery, setSearchQuery] = useState('')
@@ -125,6 +126,7 @@ export default function TodoContainer() {
                     </button>
                 </div>
             </div>
+            {/* <ChatWidget/> */}
         </div>
     );
 }

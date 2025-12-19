@@ -6,7 +6,7 @@ export const fetchUsersData = createAsyncThunk(
     "admin/fetchUser",
     async (_, { rejectWithValue }) => {
         try {
-            const res = await fetchWithAuth(`http://localhost:3000/api/users/all`,
+            const res = await fetchWithAuth(`${process.env.APP_API_URL}/api/users/all`,
                 { method: "GET" }
             );
             const data = await res.json();
@@ -24,7 +24,7 @@ export const fetchTodos = createAsyncThunk(
     async (page = 1, { rejectWithValue }) => {
         try {
             const pageSize = 9;
-            const res = await fetchWithAuth(`http://localhost:3000/api/todos/all?page=${page}&pageSize=${pageSize}`,
+            const res = await fetchWithAuth(`${process.env.APP_API_URL}/api/todos/all?page=${page}&pageSize=${pageSize}`,
                 { method: "GET" }
             );
             const data = await res.json();
@@ -43,7 +43,7 @@ export const editUserName = createAsyncThunk(
         const { userId, newName } = payload;
         // console.log("Received:", userId, newName);
         try {
-            const res = await fetchWithAuth(`http://localhost:3000/api/users/${userId}`,
+            const res = await fetchWithAuth(`${process.env.APP_API_URL}/api/users/${userId}`,
                 {
                     method: "PATCH",
                     headers: {
@@ -77,7 +77,7 @@ export const deleteUser = createAsyncThunk(
     "todos/deleteUser",
     async (id, { rejectWithValue }) => {
         try {
-            const res = await fetchWithAuth(`http://localhost:3000/api/users/${id}`, {
+            const res = await fetchWithAuth(`${process.env.APP_API_URL}/api/users/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -96,7 +96,7 @@ export const deleteTodo = createAsyncThunk(
     "todos/deleteTodo",
     async (id, { rejectWithValue }) => {
         try {
-            const res = await fetchWithAuth(`http://localhost:3000/api/todos/${id}`, {
+            const res = await fetchWithAuth(`${process.env.APP_API_URL}/api/todos/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",

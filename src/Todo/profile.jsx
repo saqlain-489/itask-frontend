@@ -36,7 +36,7 @@ export default function Profile() {
         async function getuser() {
 
             try {
-                const res = await fetchWithAuth("http://localhost:3000/api/users/me", {
+                const res = await fetchWithAuth(`${process.env.APP_API_URL}/api/users/me`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
@@ -108,7 +108,7 @@ export default function Profile() {
             const imageUrl = data.secure_url;
 
 
-            const res2 = await fetchWithAuth(`http://localhost:3000/api/users/me`,
+            const res2 = await fetchWithAuth(`${process.env.APP_API_URL}/api/users/me`,
                 {
                     method: "PATCH",
                     headers: {
@@ -167,7 +167,7 @@ export default function Profile() {
         try {
             setIsediting(false);
 
-            const res2 = await fetchWithAuth(`http://localhost:3000/api/users/me`,
+            const res2 = await fetchWithAuth(`${process.env.APP_API_URL}/api/users/me`,
                 {
                     method: "PATCH",
                     headers: {

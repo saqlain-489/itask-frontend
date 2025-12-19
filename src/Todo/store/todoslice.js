@@ -8,7 +8,7 @@ const refreshAccessToken = async () => {
         console.log('No refresh token available');
     }
 
-    const res = await fetch('http://localhost:3000/api/auth/refresh', {
+    const res = await fetch(`${process.env.APP_API_URL}/api/auth/refresh`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
@@ -72,7 +72,7 @@ export const fetchTodos = createAsyncThunk(
     async (page = 1, { rejectWithValue }) => {
         try {
             const res = await fetchWithAuth(
-                `http://localhost:3000/api/todos?page=${page}&pageSize=6`
+                `${process.env.APP_API_URL}/api/todos?page=${page}&pageSize=6`
             );
             const data = await res.json();
             if (!res.ok) throw new Error(data.message);
@@ -89,7 +89,7 @@ export const createTodo = createAsyncThunk(
         try {
             const { values, imageUrl } = payload;
 
-            const res = await fetchWithAuth('http://localhost:3000/api/todos', {
+            const res = await fetchWithAuth('${process.env.APP_API_URL}/api/todos', {
                 method: "POST",
                 body: JSON.stringify({
                     ...values,
@@ -117,7 +117,7 @@ export const deleteTodo = createAsyncThunk(
     "todos/deleteTodo",
     async (id, { rejectWithValue }) => {
         try {
-            const res = await fetchWithAuth(`http://localhost:3000/api/todos/${id}`, {
+            const res = await fetchWithAuth(`${process.env.APP_API_URL}/api/todos/${id}`, {
                 method: "DELETE",
                 headers: {
                     "Content-Type": "application/json",
@@ -138,7 +138,7 @@ export const toggleTodo = createAsyncThunk(
     "todos/toggleTodo",
     async (todo, { rejectWithValue }) => {
         try {
-            const res = await fetchWithAuth(`http://localhost:3000/api/todos/${todo._id}`, {
+            const res = await fetchWithAuth(`${process.env.APP_API_URL}/api/todos/${todo._id}`, {
                 method: "PATCH",
                 headers: {
                     "Content-Type": "application/json",
@@ -161,7 +161,7 @@ export const searchTodos = createAsyncThunk(
     async (query, { rejectWithValue }) => {
         try {
             const res = await fetchWithAuth(
-                `http://localhost:3000/api/todos/search?query=${encodeURIComponent(query)}`
+                `${process.env.APP_API_URL}/api/todos/search?query=${encodeURIComponent(query)}`
             );
 
             const data = await res.json();

@@ -5,13 +5,13 @@ export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async (credentials, { rejectWithValue }) => {
     try {
-      const res = await fetch("http://localhost:3000/api/auth/login", {
+      const res = await fetch(`${process.env.APP_API_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(credentials),
       });
-
       const data = await res.json();
+      console.log(data)
       console.log(data.user.refreshToken)
       if (!res.ok) {
         throw new Error(data.message || "Login failed");
@@ -22,7 +22,7 @@ export const loginUser = createAsyncThunk(
       localStorage.setItem('user', JSON.stringify(data.user))
 
 
-      const res2 = await fetch(`http://localhost:3000/api/users/me`, {
+      const res2 = await fetch(`${process.env.APP_API_URL}/api/users/me`, {
         method: "GET",
         headers: {
           "Authorization": `Bearer ${data.accesstoken}`,
