@@ -48,7 +48,7 @@ export default function Theme({ onNewclick, onOldclick, }) {
         // const docSnap = await getDoc(userRef);
         // const data = docSnap.data();
 
-        const res = await fetchWithAuth(`${process.env.APP_API_URL}/api/users/me`,
+        const res = await fetchWithAuth(`${import.meta.env.VITE_APP_API_URL}/api/users/me`,
           {
             method: "GET",
             headers: {
@@ -103,7 +103,7 @@ export default function Theme({ onNewclick, onOldclick, }) {
       const newtheme = !islight;
       setislight(newtheme);
 
-      const res = await fetchWithAuth(`${process.env.APP_API_URL}/api/users/me`,
+      const res = await fetchWithAuth(`${import.meta.env.VITE_APP_API_URL}/api/users/me`,
         {
           method: "PATCH",
           headers: {

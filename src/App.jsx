@@ -7,7 +7,7 @@ import Inputpage from "./Todo/todoInput.jsx";
 import Editpage from "./Todo/edittodo.jsx";
 // import Authpage from "./Todo/authpage.jsx";
 import { Toaster } from "react-hot-toast";
-import Landing from "./Todo/landing Page/landing.jsx";
+import Landing from "./Todo/landing-page/landing.jsx";
 import SignIn from "./Todo/SignIn.jsx";
 import SignUp from "./Todo/SignUp.jsx";
 import Notfound from "./Todo/error404.jsx";

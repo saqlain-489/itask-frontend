@@ -98,7 +98,7 @@ const ChatWidget = () => {
       };
       setMessages((prev) => [...prev, botMessagePlaceholder]);
 
-      const response = await fetchWithAuth(`${process.env.APP_API_URL}/api/chat`, {
+      const response = await fetchWithAuth(`${import.meta.env.VITE_APP_API_URL}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userMessageText, userId: userdata?.id }),
