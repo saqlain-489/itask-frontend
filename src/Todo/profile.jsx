@@ -36,7 +36,7 @@ export default function Profile() {
         async function getuser() {
 
             try {
-                const res = await fetchWithAuth(`${import.meta.env.APP_API_URL}/api/users/me`, {
+                const res = await fetchWithAuth(`${import.meta.env.VITE_APP_API_URL}/api/users/me`, {
                     method: "GET",
                     headers: {
                         "Content-Type": "application/json",
